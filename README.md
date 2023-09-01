@@ -2,7 +2,25 @@
 
 <img src="https://img.shields.io/static/v1?style=for-the-badge&label=&labelColor=55ba80&message=DevOps+Cloud.ru+Camp&color=23282f&logo=icloud&logoColor=white" alt="cloud.ru"/>
 
-## Ansible playbook
+## Usage
+
+1. Clone this repo. For instance with ssh link:
+
+   ```bash
+   $ git clone git@github.com:glebcomissarov/devops-camp.git
+   ```
+
+2. Move to any folder and follow instructions in corresponding `README` file. For instance:
+
+   ```bash
+   $ cd ./playbook
+
+   # next: follow README file in that folder
+   ```
+
+## Tasks
+
+### Task 1: Ansible playbook
 
 <img src="https://img.shields.io/badge/Ansible-da2f20?style=for-the-badge&logo=ansible&logoColor=white" alt="ansible"/>
 
@@ -15,7 +33,7 @@
 
 Плейбук должен выполняться относительно чистого дистрибутива ОС Ubuntu Server 22.04.3. Полученный плейбук и команду для его запуска положить в папку `/playbook`
 
-## Web приложение на Python
+### Task 2: Web приложение на Python
 
 <img src="https://img.shields.io/badge/FastAPI-009688?style=for-the-badge&logo=fastapi&logoColor=white" alt="python"/>
 
