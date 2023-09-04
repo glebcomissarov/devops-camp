@@ -1,0 +1,92 @@
+---
+# create Namespace
+
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: cloudns
+  labels:
+    name: cloudns
+
+---
+# create Deployment
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: fastapi
+  namespace: cloudns
+spec:
+  selector:
+    matchLabels:
+      app: fastapi-app
+  replicas: 3
+  template:
+    metadata:
+      labels:
+        app: fastapi-app
+    spec:
+      containers:
+        - name: py-app
+          image: glebcom/py-app
+          resources:
+            limits:
+              memory: "128Mi"
+              cpu: "500m"
+          ports:
+            - name: local
+              containerPort: 8000
+              protocol: TCP
+          env:
+            - name: UUID
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.uid
+            - name: AUTHOR
+              value: "Gleb Komissarov"
+          livenessProbe:
+            httpGet:
+              port: local
+              path: /liveness
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              port: local
+              path: /readiness
+            initialDelaySeconds: 5
+            periodSeconds: 3
+
+---
+# create Service
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: flask-app
+  namespace: cloudns
+spec:
+  type: ClusterIP
+  selector:
+    app: fastapi-app
+  ports:
+    - port: 80 # flask-app:80
+      targetPort: local
+      protocol: TCP
+
+---
+# create Service
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: py-app-service
+  namespace: cloudns
+spec:
+  type: LoadBalancer
+  selector:
+    app: fastapi-app
+  ports:
+    - protocol: TCP
+      port: 8080 # localhost:8080
+      targetPort: local
