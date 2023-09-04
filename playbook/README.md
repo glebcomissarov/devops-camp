@@ -17,7 +17,7 @@ First of all, we need to create several _servers_ to performe some operations un
 Docker containers are based on custom image described in `./init-servers/Dockerfile` (with ubuntu as base image). The official ubuntu image doesn't have python installed that is nessesary for Absible to work on server because Ansible convert yaml config files to python commands and these python commands should be executed on server. Also to connect to server by ssh, we need _ssh-server_ running.
 
 > [!WARNING]
-> The Docker ubuntu images are limited and don't proparly work. :(
+> The Docker ubuntu images are limited and don't properly work. :(
 
 ```bash
 # build image
@@ -51,7 +51,7 @@ $ ssh -i ~/.ssh/root_rsa cloud@192.168.64.3
 
 <center>
 <figure>
-    <img src="../imgs/ansible-v2.png" height="450">
+    <img src="../imgs/ansible-v1.png" height="450">
     <figcaption><i>General schema of servers setup</i></figcaption>
 </figure>
 </center>
