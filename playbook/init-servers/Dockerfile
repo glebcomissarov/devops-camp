@@ -11,10 +11,6 @@ RUN mkdir /var/run/sshd
 
 # set password to root user and append to sudo group
 RUN echo 'root:rootpass' | chpasswd && adduser root sudo
-# require sude to ask for root password for all users
-# that belong to sudo group
-# RUN echo 'Defaults rootpw' >> /etc/sudoers
-# RUN echo '%sudo ALL=(ALL) PASSWD:ALL' >> /etc/sudoers
 # allow root user login with ssh
 RUN sed -i 's/#PermitRootLogin prohibit-password/PermitRootLogin yes/' /etc/ssh/sshd_config
 
