@@ -1,0 +1,12 @@
+#!/bin/bash
+
+# run 3 servers
+for ((i=0; i<=2; i++))
+{
+    container_id=$(eval "docker run --name us$i -it -d -p 220$i:22 glebcom/ubuntu-server:0.1")
+    date_and_time=$(date '+%d/%m/%Y %H:%M:%S')
+
+    printf "[$date_and_time]: server us$i with id $container_id\n" >> docker_logs
+    
+    printf "server us$i is rinning\n"
+}

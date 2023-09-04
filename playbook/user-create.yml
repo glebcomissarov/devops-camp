@@ -1,0 +1,67 @@
+---
+- name: user
+  hosts: all
+  become: yes
+  tasks:
+    # create some group
+    - name: Add user group
+      group:
+        name: devops-team
+        state: present
+
+    # ✅ create new user
+    - name: Create user "{{ username }}" with sudo access
+      user:
+        name: cloudru
+        password: "{{ userpass | password_hash('sha512') }}"
+        state: present
+        create_home: yes # directory /home/username will be created
+        groups: sudo,devops-team
+        append: yes
+
+    # ✅ allow cloudru user authorization by ssh key
+    - name: Create authorized_keys file & append ssh public key
+      ansible.posix.authorized_key:
+        user: "{{ username }}"
+        state: present
+        key: "{{ lookup('file', './cloudru_rsa.pub') }}"
+
+    # also add my ssh key - because I need to login also! :)))
+    - name: Append ssh public key of root user
+      ansible.posix.authorized_key:
+        user: "{{ username }}"
+        state: present
+        key: "{{ lookup('file', './init-servers/root_rsa.pub') }}"
+
+    # ✅ copy file with ssh public key
+    - name: Copy ssh public key for "{{ username }}" user
+      copy:
+        src: ./cloudru_rsa.pub
+        # destination directory exists!
+        dest: "/home/{{ username }}/.ssh/{{ username }}_rsa.pub"
+        group: devops-team
+        mode: u+r
+
+    # ✅ block ssh login option for root user
+    - name: Block authorization by ssh for root user
+      lineinfile:
+        dest: /etc/ssh/sshd_config
+        regexp: "^PermitRootLogin"
+        line: "PermitRootLogin no"
+        state: present
+      become: yes
+      notify:
+        # call ansible handler to restart ssh-server
+        - restart ssh-server
+
+  handlers:
+    # service ssh restart
+    - name: restart ssh-server
+      service:
+        name: ssh
+        state: restarted
+      # systemd:
+      #   name: ssh
+      #   state: restarted
+      # command:
+      #   cmd: /etc/init.d/ssh restart

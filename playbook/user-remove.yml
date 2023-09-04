@@ -1,0 +1,10 @@
+---
+- name: user
+  hosts: utm_ubuntu_server
+  tasks:
+    - name: Remove the user "{{ username }}"
+      user:
+        name: "{{ username }}"
+        state: absent
+        remove: yes
+      become: yes
