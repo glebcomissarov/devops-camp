@@ -2,7 +2,7 @@ deploy:
   name: fastapi
   replicas: 3
 image:
-  name: glebcom/js-app
+  name: glebcom/py-app
   tag: latest
 vars:
   author: Gleb Komissarov (helm)
