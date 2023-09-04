@@ -1,6 +1,6 @@
 # FastAPI app & docker image
 
-# Usage
+## Usage
 
 ```console
 $ docker-compose --env-file ./.env.dev up -d
@@ -16,7 +16,7 @@ $ curl localhost:8000/author
 {"author":"Gleb Komissarov"}
 ```
 
-# Step by step
+## Step by step
 
 Download `py-app` image:
 
