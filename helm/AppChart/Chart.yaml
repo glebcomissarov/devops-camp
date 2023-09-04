@@ -1,0 +1,17 @@
+# just pure technical information
+
+apiVersion: v2
+name: AppChart
+description: Helm Chart for PyApp
+type: application
+version: 0.1.0
+appVersion: "0.0.1"
+
+keywords:
+  - cloudru
+  - python
+
+maintainers:
+  - name: Gleb Komissarov
+    email: gleb@cloud.ru
+    url: https://glebtech.ru
