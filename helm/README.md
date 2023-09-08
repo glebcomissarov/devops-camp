@@ -6,11 +6,11 @@
 cd AppChart/
 
 # run app
-$ helm install superApp .
+$ helm install super-app .
 
 # with custom values
-$ helm install -f values.deploy.yaml superApp .
+$ helm install -f values.deploy.yaml super-app .
 
 # delete app
-$ helm uninstall superApp
+$ helm uninstall super-app
 ```
