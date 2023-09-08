@@ -1,0 +1,10 @@
+version: "3.8"
+
+services:
+  py_app:
+    container_name: actix-app
+    image: glebcom/actix-app:latest
+    environment:
+      FASTAPI_SERVICE_HOSTNAME: "${FASTAPI_SERVICE_HOSTNAME}"
+    ports:
+      - 8080:8080

@@ -2,3 +2,8 @@
 playbook/docker_logs
 __pycache__
 .DS_Store
+leptos-wasm-front
+rust-app
+utils
+manifest/actix-app/oldDockerfile.txt
+manifest/actix-app/target
