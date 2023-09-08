@@ -4,6 +4,14 @@
 
 ## Usage
 
+> [!NOTE]  
+> There are some additional changes _for K8s and helm parts_ that are not related with main tasts:
+>
+> - additional Actix app (in Rust) that communicate with FastAPI app
+> - ingress controller
+>
+> If you do not want to see it, you can jumt to [this commit](https://github.com/glebcomissarov/devops-camp/tree/1a33551ab0760540f51d82d81a64223c5a24d1e0).
+
 1. Clone this repo. For instance with ssh link:
 
    ```bash
