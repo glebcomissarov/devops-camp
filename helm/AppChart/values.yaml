@@ -5,4 +5,4 @@ image:
   name: glebcom/py-app
   tag: latest
 vars:
-  author: Gleb Komissarov (helm)
+  author: Gleb Komissarov (from cm via helm)

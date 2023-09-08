@@ -6,11 +6,11 @@
 cd AppChart/
 
 # run app
-$ helm install flaskapp .
+$ helm install superApp .
 
 # with custom values
-$ helm install -f values.deploy.yaml flaskapp .
+$ helm install -f values.deploy.yaml superApp .
 
 # delete app
-$ helm uninstall flaskapp
+$ helm uninstall superApp
 ```

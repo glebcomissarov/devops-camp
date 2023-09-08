@@ -1,14 +1,4 @@
 ---
-# create Namespace
-
-apiVersion: v1
-kind: Namespace
-metadata:
-  name: cloudns
-  labels:
-    name: cloudns
-
----
 # create Deployment
 
 apiVersion: apps/v1
@@ -43,50 +33,45 @@ spec:
                 fieldRef:
                   fieldPath: metadata.uid
             - name: AUTHOR
-              value: "Gleb Komissarov"
+              # value: "Gleb K."
+              valueFrom:
+                configMapKeyRef:
+                  name: config-map
+                  key: author
           livenessProbe:
             httpGet:
               port: local
               path: /liveness
             initialDelaySeconds: 5
-            periodSeconds: 10
+            periodSeconds: 25
           readinessProbe:
             httpGet:
               port: local
               path: /readiness
             initialDelaySeconds: 5
             periodSeconds: 3
+          volumeMounts:
+            - name: config
+              mountPath: "/config"
+              readOnly: true
+      volumes:
+        - name: config
+          configMap:
+            name: config-map
 
 ---
-# create Service
+# create ClusterIP Service
 
 apiVersion: v1
 kind: Service
 metadata:
-  name: flask-app
+  name: fastapi-app
   namespace: cloudns
 spec:
   type: ClusterIP
   selector:
     app: fastapi-app
   ports:
-    - port: 80 # flask-app:80
+    - port: 80
       targetPort: local
       protocol: TCP
-
----
-# create Service
-
-apiVersion: v1
-kind: Service
-metadata:
-  name: py-app-service
-  namespace: cloudns
-spec:
-  type: LoadBalancer
-  selector:
-    app: fastapi-app
-  ports:
-    - protocol: TCP
-      port: 8080 # localhost:8080
-      targetPort: local
