@@ -3,28 +3,51 @@
 ## Usage
 
 ```bash
-# run deployment
+# here ingress is used:
+$ make write
+
+# run config files
+$ kubectl apply -f .
+
+# or run separately
+$ kubectl apply -f cm.yml
 $ kubectl apply -f setup.yml
+$ kubectl apply -f actix-app-steup.yml
+$ kubectl apply -f ingress.yml
 
-# stop server and free resourses
-$ kubectl delete -f setup.yml
+# stop server, free resourses and delete ip->host link line
+$ kubectl delete -f cm.yml
+$ make delete_on_mac
 ```
 
-Test app responses:
+Test app response:
 
 ```bash
-$ curl localhost:8080/
-{"status":"FastAPI server is running"}
+$ curl -i http://actix-app.cloud.ru/check_fastapi_app
 ```
 
-```bash
-$ curl localhost:8080/id
-{"uuid":"37ffea85-62af-46de-87fe-5e5a6c0c99a7"}
 ```
+HTTP/1.1 200 OK
+Date: Fri, 08 Sep 2023 12:20:22 GMT
+Content-Length: 379
+Connection: keep-alive
 
-```bash
-$ curl localhost:8080/author
-{"author":"Gleb Komissarov"}
+Routes {
+    data: [
+        (
+            "/hostname",
+            "Hostname { hostname: \"fastapi-84d9cfdcdf-t5cvr\" }",
+        ),
+        (
+            "/author",
+            "Author { author: \"Gleb Komissarov (taken from k8s ConfigMap)\" }",
+        ),
+        (
+            "/id",
+            "PodID { uuid: \"1b985e19-c565-4b29-8fbb-749a4d521cc9\" }",
+        ),
+    ],
+}%
 ```
 
 ## Step by step
