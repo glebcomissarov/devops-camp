@@ -3,7 +3,7 @@ version: "3.8"
 services:
   py_app:
     container_name: py_app
-    image: glebcom/py-app:latest
+    image: glebcom/py-app:1.0.0-alpine
     environment:
       AUTHOR: "${AUTHOR}"
       UUID: "${UUID}"

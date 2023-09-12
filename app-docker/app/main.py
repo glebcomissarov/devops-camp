@@ -6,14 +6,24 @@ import random
 # -------------------------------------------------------------
 # === code for k8s readinessProbe simulation ==================
 # -------------------------------------------------------------
-# this code will be executed once,
-# before the application starts receiving requests
-# https://fastapi.tiangolo.com/advanced/events/#lifespan-events
+# This code will be executed once,
+# before the application starts receiving requests [1].
+# It will help to simulate readiness of app to send some data.
+# [1] https://fastapi.tiangolo.com/advanced/events/#lifespan-events
 
 from contextlib import asynccontextmanager
 
 def request_author() -> bool:
-    # lets say that this request can fail due to some reasons
+    """
+    Simulation of readiness of server to send data.
+
+    Lets say that this request can fail due to some reasons 
+    (for instance, internal error or connection to DB failed).
+
+    Returned value can be
+    - `True`: OK, data can be send
+    - `False`: some error has occured, server should be restarted (k8s Pod, in our case)
+    """
     return bool(random.randint(0,1))
 
 
@@ -37,11 +47,12 @@ REQUEST_TOKEN = "15708702692062422508"
 @app.get("/", status_code=200)
 def index(req: Request, resp: Response):
     """
-    Root endpoint of server.
+    Root endpoint of the server.
 
     Allows to check access rights by requiring REQUEST_TOKEN in request Header.
     """
     token = req.headers.get("REQUEST_TOKEN")
+
     if token == REQUEST_TOKEN:
         return { "access": "OK" }
     elif token == "HealthCheck": # for k8s livenessProbe
@@ -74,20 +85,24 @@ def get_author():
 @app.get("/id")
 def get_id():
     """
-    Returns value from UUID env variable (if k8s is used: it should be Pod ID)
+    Returns value from UUID env variable.
+    
+    If app is running inside k8s Pod - it should be Pod ID
     """
     return { "uuid": os.environ.get("UUID", "unknown UUID") }
 
 
 # === readiness check ===
 
-# @app.get("/health")
-# def liveness():
-#     return { "status": "server is live" }
-
-
 @app.get("/readiness", status_code=200)
 def readiness(resp: Response):
+    """
+    Checks readiness of the server to send data.
+
+    Status code:
+    - `200`: OK, server is working correct
+    - `409_CONFLICT`: server should be restarted
+    """
     if app_state["request_author"]:
         return f"Access Denied (status code: {status.HTTP_200_OK})"
     else:
