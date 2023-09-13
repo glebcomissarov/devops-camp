@@ -21,7 +21,7 @@ $ make delete_on_mac
 Test app response:
 
 ```bash
-$ curl -i http://actix-app.cloud.ru/check_fastapi_app
+$ curl -i "http://localhost:8080/check_fastapi_app?access_token=cloudru125"
 ```
 
 ```

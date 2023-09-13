@@ -16,11 +16,30 @@ $ docker-compose down
 Test app (run `docker-compose.yml` file):
 
 ```bash
-curl -i http://localhost:8080/check_fastapi_app
+curl -i "http://localhost:8080/check_fastapi_app?access_token=cloudru125"
 ```
 
 ```
+HTTP/1.1 200 OK
+content-length: 329
+date: Wed, 13 Sep 2023 11:17:45 GMT
 
+Routes {
+    data: [
+        (
+            "/hostname",
+            "Hostname { hostname: \"glebmac.local\" }",
+        ),
+        (
+            "/author",
+            "Author { author: \"Gleb Komissarov\" }",
+        ),
+        (
+            "/id",
+            "PodID { uuid: \"uuid-should-be-generated\" }",
+        ),
+    ],
+}
 ```
 
 Usefull commands to build Docker image:
