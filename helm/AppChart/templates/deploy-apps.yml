@@ -1,0 +1,211 @@
+---
+# -------------------------------------------------------
+# Python FastAPI app
+#
+# 1) Deployment will manage ReplicaSet
+#    with some number of replicas (Pods with Python FastAPI app)
+# 2) Deployment will have ClusterIP service
+# -------------------------------------------------------
+
+# create Deployment for Python FastAPI app
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{.Values.deploy.name}}
+  namespace: cloudns
+  annotations:
+    company: cloud-ru
+    author/name: Gleb K.
+    author/email: gleb@cloud.ru
+spec:
+  selector:
+    matchLabels:
+      app: fastapi-app
+  replicas: {{.Values.deploy.replicas}}
+  template:
+    metadata:
+      labels:
+        app: fastapi-app
+    spec:
+      containers:
+        - name: py-app
+          image: "{{.Values.image.name}}:{{.Values.image.tag}}"
+          resources:
+            limits:
+              memory: "128Mi"
+              cpu: "500m"
+          ports:
+            - name: local
+              containerPort: 8000
+              protocol: TCP
+          env:
+            - name: UUID
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.uid
+            - name: AUTHOR
+              valueFrom:
+                configMapKeyRef:
+                  name: config-map
+                  key: author
+          livenessProbe:
+            httpGet:
+              port: local
+              path: /
+              httpHeaders:
+                - name: REQUEST-TOKEN
+                  value: "HealthCheck"
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              port: local
+              path: /readiness
+            initialDelaySeconds: 5
+            periodSeconds: 5
+          volumeMounts:
+            - name: config
+              mountPath: "/config"
+              readOnly: true
+      volumes:
+        - name: config
+          configMap:
+            name: config-map
+
+---
+# create ClusterIP Service for Python FastAPI app
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: fastapi-app
+  namespace: cloudns
+spec:
+  type: ClusterIP
+  selector:
+    app: fastapi-app
+  ports:
+    - port: 80
+      targetPort: local
+      protocol: TCP
+
+---
+# -------------------------------------------------------
+# Rust Actix app
+#
+# 1) Deployment will manage ReplicaSet
+#    with 2 replicas (Pods with Rust Actix app)
+# 2) Deployment will have ClusterIP service
+#    that will be used by FastAPI Deployment for Readiness probe
+# 3) Deployment will have Ingress service
+#    to have access outside of Cluster
+# -------------------------------------------------------
+
+# create Deployment for Rust Actix app
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: external-app
+  namespace: cloudns
+spec:
+  selector:
+    matchLabels:
+      app: external
+  replicas: 2
+  template:
+    metadata:
+      labels:
+        app: external
+    spec:
+      # hostNetwork: true
+      containers:
+        - name: external-app
+          image: glebcom/actix-app:1.0.0-bullseye-slim
+          resources:
+            limits:
+              memory: "128Mi"
+              cpu: "500m"
+          ports:
+            - name: local
+              containerPort: 8080
+              protocol: TCP
+          env:
+            - name: FASTAPI_SERVICE_HOSTNAME
+              valueFrom:
+                configMapKeyRef:
+                  name: config-map
+                  key: fastapi_service_hostname
+          volumeMounts:
+            - name: config
+              mountPath: "/config"
+              readOnly: true
+      volumes:
+        - name: config
+          configMap:
+            name: config-map
+
+---
+# create ClusterIP internal Service
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: actix-internal-service
+  namespace: cloudns
+spec:
+  selector:
+    app: external
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: local
+---
+# create LoadBalancer Service
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: external-app-service
+  namespace: cloudns
+spec:
+  type: LoadBalancer
+  selector:
+    app: external
+  ports:
+    - protocol: TCP
+      port: 8090 # localhost:8090
+      targetPort: local
+
+---
+# Add Ingress
+
+# apiVersion: networking.k8s.io/v1
+# kind: Ingress
+# metadata:
+#   name: actix-ingress
+#   namespace: cloudns
+# spec:
+#   ingressClassName: nginx
+#   rules:
+#     - host: "actix-app.cloud.ru"
+#       http:
+#         paths:
+#           - path: /
+#             pathType: Prefix
+#             backend:
+#               service:
+#                 name: actix-internal-service
+#                 port:
+#                   number: 80
+
+# - host: actix-app.cloud.ru
+#   http:
+#     paths:
+#       - path: /
+#         backend:
+#           service:
+#             name: actix-internal-service
+#             port:
+#               number: 80

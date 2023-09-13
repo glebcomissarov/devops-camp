@@ -10,13 +10,11 @@ $ make write
 $ kubectl apply -f .
 
 # or run separately
-$ kubectl apply -f cm.yml
-$ kubectl apply -f setup.yml
-$ kubectl apply -f actix-app-steup.yml
-$ kubectl apply -f ingress.yml
+$ kubectl apply -f setup.yml # setup Namespace and ComfigMap
+$ kubectl apply -f deploy.yml
 
 # stop server, free resourses and delete ip->host link line
-$ kubectl delete -f cm.yml
+$ kubectl delete -f setup.yml
 $ make delete_on_mac
 ```
 
@@ -102,8 +100,6 @@ $ kubectl get pods -n ingress-nginx -o wide
 Setup ingress rules:
 
 ```bash
-$ kubectl apply -f ingress.yml
-
 # check
 $ kubectl get ingress -n cloudns
 ```

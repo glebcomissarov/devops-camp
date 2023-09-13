@@ -1,6 +1,6 @@
 # let's take Alpine (or Debian) Linux as base image
-FROM python:3.11-slim
-# FROM python:3.11-alpine
+# FROM python:3.11-slim
+FROM python:3.11-alpine
 
 # set working directory
 WORKDIR /opt/app

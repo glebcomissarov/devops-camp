@@ -49,9 +49,9 @@ def index(req: Request, resp: Response):
     """
     Root endpoint of the server.
 
-    Allows to check access rights by requiring REQUEST_TOKEN in request Header.
+    Allows to check access rights by requiring REQUEST-TOKEN in request Header.
     """
-    token = req.headers.get("REQUEST_TOKEN")
+    token = req.headers.get("REQUEST-TOKEN")
 
     if token == REQUEST_TOKEN:
         return { "access": "OK" }

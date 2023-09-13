@@ -1,104 +1,25 @@
-# -------------------------------------------------------
-# Python FastAPI app
-#
-# 1) Deployment will manage ReplicaSet
-#    with 3 replicas (Pods with Python FastAPI app)
-# 2) Deployment will have ClusterIP service
-# -------------------------------------------------------
 ---
-# create Deployment for Python FastAPI app
-
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: fastapi
-  namespace: cloudns
-  annotations:
-    company: cloud-ru
-    author/name: Gleb K.
-    author/email: gleb@cloud.ru
-spec:
-  selector:
-    matchLabels:
-      app: fastapi-app
-  replicas: 5
-  template:
-    metadata:
-      labels:
-        app: fastapi-app
-    spec:
-      containers:
-        - name: py-app
-          image: glebcom/py-app
-          resources:
-            limits:
-              memory: "128Mi"
-              cpu: "500m"
-          ports:
-            - name: local
-              containerPort: 8000
-              protocol: TCP
-          env:
-            - name: UUID
-              valueFrom:
-                fieldRef:
-                  fieldPath: metadata.uid
-            - name: AUTHOR
-              valueFrom:
-                configMapKeyRef:
-                  name: config-map
-                  key: author
-          livenessProbe:
-            httpGet:
-              port: local
-              path: /
-              httpHeaders:
-                - name: REQUEST_TOKEN
-                  value: "HealthCheck"
-            initialDelaySeconds: 5
-            periodSeconds: 10
-          readinessProbe:
-            httpGet:
-              port: local
-              path: /readiness
-            initialDelaySeconds: 5
-            periodSeconds: 5
-          volumeMounts:
-            - name: config
-              mountPath: "/config"
-              readOnly: true
-      volumes:
-        - name: config
-          configMap:
-            name: config-map
-
----
-# create ClusterIP Service for Python FastAPI app
+# create Namespace
 
 apiVersion: v1
-kind: Service
+kind: Namespace
 metadata:
-  name: fastapi-app
+  name: cloudns
+  labels:
+    name: cloudns
+---
+# Create ConfigMap
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: config-map
   namespace: cloudns
-spec:
-  type: ClusterIP
-  selector:
-    app: fastapi-app
-  ports:
-    - port: 80
-      targetPort: local
-      protocol: TCP
-
----
-# -------------------------------------------------------
-# Rust Actix app
-#
-# 1) Deployment will manage ReplicaSet
-#    with 2 replicas (Pods with Rust Actix app)
-# 2) Deployment will have ClusterIP service
-#    that will be used by FastAPI Deployment for Readiness probe
-# 3) Deployment will have Ingress service
-#    to have access outside of Cluster
-# -------------------------------------------------------
----
-
+data:
+  author: Gleb Komissarov (taken from k8s ConfigMap)
+  fastapi_service_hostname: http://fastapi-app
+# ------
+# Usage:
+# ------
+# kubectl apply -f cm.yml
+# kubectl delete configmap config-map

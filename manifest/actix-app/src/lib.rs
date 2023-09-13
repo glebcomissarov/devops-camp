@@ -66,7 +66,7 @@ pub mod req {
 
         let resp = reqwest::Client::new()
             .get(hostname)
-            .header("REQUEST_TOKEN", hashed_token)
+            .header("REQUEST-TOKEN", hashed_token)
             .send()
             .await?;
 

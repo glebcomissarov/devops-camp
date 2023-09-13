@@ -1,77 +1,25 @@
 ---
-# create Deployment
-
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: {{.Values.deploy.name}}
-  namespace: cloudns
-spec:
-  selector:
-    matchLabels:
-      app: fastapi-app
-  replicas: {{.Values.deploy.replicas}}
-  template:
-    metadata:
-      labels:
-        app: fastapi-app
-    spec:
-      containers:
-        - name: py-app
-          image: "{{.Values.image.name}}:{{.Values.image.tag}}"
-          resources:
-            limits:
-              memory: "128Mi"
-              cpu: "500m"
-          ports:
-            - name: local
-              containerPort: 8000
-              protocol: TCP
-          env:
-            - name: UUID
-              valueFrom:
-                fieldRef:
-                  fieldPath: metadata.uid
-            - name: AUTHOR
-              # value: "Gleb K."
-              valueFrom:
-                configMapKeyRef:
-                  name: config-map
-                  key: author
-          livenessProbe:
-            httpGet:
-              port: local
-              path: /liveness
-            initialDelaySeconds: 5
-            periodSeconds: 25
-          readinessProbe:
-            httpGet:
-              port: local
-              path: /readiness
-            initialDelaySeconds: 5
-            periodSeconds: 3
-          volumeMounts:
-            - name: config
-              mountPath: "/config"
-              readOnly: true
-      volumes:
-        - name: config
-          configMap:
-            name: config-map
-
----
-# create ClusterIP Service
+# create Namespace
 
 apiVersion: v1
-kind: Service
+kind: Namespace
 metadata:
-  name: fastapi-app
+  name: cloudns
+  labels:
+    name: cloudns
+---
+# Create ConfigMap
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: config-map
   namespace: cloudns
-spec:
-  type: ClusterIP
-  selector:
-    app: fastapi-app
-  ports:
-    - port: 80
-      targetPort: local
-      protocol: TCP
+data:
+  author: {{.Values.vars.author}}
+  fastapi_service_hostname: http://fastapi-app
+# ------
+# Usage:
+# ------
+# kubectl apply -f cm.yml
+# kubectl delete configmap config-map
