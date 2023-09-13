@@ -1,3 +1,9 @@
 .vscode
 target
-oldDockerfile
+oldDockerfile.txt
+.env.dev
+README.md
+Dockerfile
+.dockerignore
+docker-compose.yml
+tests

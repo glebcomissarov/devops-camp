@@ -28,3 +28,9 @@ RUN apt-get update -y \
 COPY --from=builder /app/target/release/actix_app /usr/local/bin
 
 ENTRYPOINT ["/usr/local/bin/actix_app"]
+
+# ------------------------------------------------------------
+# Image on Docker Hub: https://hub.docker.com/r/glebcom/py-app
+# Image size:
+#   - 1.0.0-bullseye-slim: 35.04 MB
+# ------------------------------------------------------------

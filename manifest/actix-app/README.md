@@ -13,43 +13,31 @@ $ docker-compose --env-file ./.env.dev up -d
 $ docker-compose down
 ```
 
-Test app (in case if it is running with k8s):
+Test app (run `docker-compose.yml` file):
 
 ```bash
-curl -i http://localhost:8090/check_fastapi_app
+curl -i http://localhost:8080/check_fastapi_app
 ```
 
 ```
-HTTP/1.1 200 OK
-content-length: 379
-date: Fri, 08 Sep 2023 08:31:22 GMT
 
-Routes {
-    data: [
-        (
-            "/hostname",
-            "Hostname { hostname: \"fastapi-84d9cfdcdf-vxr6w\" }",
-        ),
-        (
-            "/author",
-            "Author { author: \"Gleb Komissarov (taken from k8s ConfigMap)\" }",
-        ),
-        (
-            "/id",
-            "PodID { uuid: \"e5b9d8ba-8f50-402c-ad04-efa3ff5a1cd0\" }",
-        ),
-    ],
-}%
 ```
 
 Usefull commands to build Docker image:
 
 ```bash
-$ docker build -t glebcom/actix-app .
+$ docker build -t glebcom/actix-app:1.0.0-bullseye-slim .
 
-$ docker run -it --rm --name actix -p 8080:8080 -d -e FASTAPI_SERVICE_HOSTNAME="http://localhost:8000" glebcom/actix-app
+$ docker run -it --rm --name actix -p 8080:8080 -d -e FASTAPI_SERVICE_HOSTNAME="http://localhost:8000" glebcom/actix-app:1.0.0-bullseye-slim
 
 $ docker exec -it actix sh
 
-$ docker push glebcom/actix-app
+$ docker push glebcom/actix-app:1.0.0-bullseye-slim
+```
+
+## Testing
+
+```bash
+$ cargo test --test without_fastapi -- --show-output
+$ cargo test --test integration_test -- --show-output
 ```

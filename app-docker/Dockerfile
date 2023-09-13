@@ -26,6 +26,6 @@ CMD [ "uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000" ]
 # ------------------------------------------------------------
 # Image on Docker Hub: https://hub.docker.com/r/glebcom/py-app
 # Image size:
-#   - debian-slim: 54.65 MB
-#   - alpine: 26.81 MB
+#   - 1.0.0-debian-slim: 54.65 MB
+#   - 1.0.0-alpine: 26.81 MB
 # ------------------------------------------------------------
