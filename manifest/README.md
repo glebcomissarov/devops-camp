@@ -52,6 +52,9 @@ Routes {
 }%
 ```
 
+> [!IMPORTANT]  
+> Note that hostname and id are not necessarily belong to the same Pod. To make this response, Actix app sends three http-requests to FastAPI, so when these requests come to ClusterIP, this service _randomly_ choose Pod to handle particular request.
+
 ## Step by step
 
 <center>
