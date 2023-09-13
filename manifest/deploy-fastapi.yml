@@ -23,6 +23,11 @@ spec:
     matchLabels:
       app: fastapi-app
   replicas: 5
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 2 # how many pods we can add at a time
+      maxUnavailable: 2
   template:
     metadata:
       labels:
@@ -89,3 +94,5 @@ spec:
     - port: 80
       targetPort: local
       protocol: TCP
+# dns: http://<service-name>.<namespace>.svc.cluster.local
+# dns: http://fastapi-app.cloudns.svc.cluster.local
