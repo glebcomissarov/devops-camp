@@ -1,6 +1,6 @@
 deploy:
   name: fastapi
-  replicas: 7
+  replicas: 5
 image:
   name: glebcom/py-app
   tag: 1.0.0-alpine

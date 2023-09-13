@@ -1,0 +1,91 @@
+---
+# -------------------------------------------------------
+# Python FastAPI app
+#
+# 1) Deployment will manage ReplicaSet
+#    with some number of replicas (Pods with Python FastAPI app)
+# 2) Deployment will have ClusterIP service
+# -------------------------------------------------------
+
+# create Deployment for Python FastAPI app
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: fastapi
+  namespace: cloudns
+  annotations:
+    company: cloud-ru
+    author/name: Gleb K.
+    author/email: gleb@cloud.ru
+spec:
+  selector:
+    matchLabels:
+      app: fastapi-app
+  replicas: 5
+  template:
+    metadata:
+      labels:
+        app: fastapi-app
+    spec:
+      containers:
+        - name: py-app
+          image: glebcom/py-app:1.0.0-alpine
+          resources:
+            limits:
+              memory: "128Mi"
+              cpu: "500m"
+          ports:
+            - name: local
+              containerPort: 8000
+              protocol: TCP
+          env:
+            - name: UUID
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.uid
+            - name: AUTHOR
+              valueFrom:
+                configMapKeyRef:
+                  name: config-map
+                  key: author
+          livenessProbe:
+            httpGet:
+              port: local
+              path: /liveness
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              port: local
+              path: /
+              httpHeaders:
+                - name: REQUEST-TOKEN
+                  value: "HealthCheck"
+            initialDelaySeconds: 5
+            periodSeconds: 5
+          volumeMounts:
+            - name: config
+              mountPath: "/config"
+              readOnly: true
+      volumes:
+        - name: config
+          configMap:
+            name: config-map
+
+---
+# create ClusterIP Service for Python FastAPI app
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: fastapi-app
+  namespace: cloudns
+spec:
+  type: ClusterIP
+  selector:
+    app: fastapi-app
+  ports:
+    - port: 80
+      targetPort: local
+      protocol: TCP

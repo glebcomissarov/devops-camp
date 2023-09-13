@@ -7,11 +7,14 @@
 $ make write
 
 # run config files
-$ kubectl apply -f .
-
-# or run separately
 $ kubectl apply -f setup.yml # setup Namespace and ComfigMap
-$ kubectl apply -f deploy.yml
+$ kubectl apply -f deploy-actix.yml
+$ kubectl apply -f deploy-fastapi.yml
+
+# live watch how ReplicaSet will manage Pods
+$ kubectl get pods -n cloudns --watch
+# or Pod name and Pod ID
+$ kubectl get pods -n cloudns -o custom-columns=PodName:.metadata.name,PodUID:.metadata.uid
 
 # stop server, free resourses and delete ip->host link line
 $ kubectl delete -f setup.yml
