@@ -4,7 +4,7 @@ import os
 import random
 
 # -------------------------------------------------------------
-# === code for k8s readinessProbe simulation ==================
+# === code for k8s livenessProbe simulation ==================
 # -------------------------------------------------------------
 # This code will be executed once,
 # before the application starts receiving requests [1].
@@ -55,8 +55,19 @@ def index(req: Request, resp: Response):
 
     if token == REQUEST_TOKEN:
         return { "access": "OK" }
-    elif token == "HealthCheck": # for k8s livenessProbe
-        return { "server_status":  status.HTTP_200_OK }
+    elif token == "HealthCheck": # for k8s readinessProbe
+        # Checks readiness of the server to send data.
+        # Status code:
+        # - `200`: OK, server is working correct
+        # - `409_CONFLICT`: server will not receive any traffic
+
+        is_ready = bool(random.randint(0, 5))
+
+        if is_ready:
+            return f"readinessProbe (status code: {status.HTTP_200_OK})"
+        else:
+            resp.status_code = status.HTTP_409_CONFLICT
+            return f"readinessProbe (status code: {status.HTTP_409_CONFLICT})"
     else:
         resp.status_code = status.HTTP_403_FORBIDDEN
         return { "access": "HTTP_403_FORBIDDEN" }
@@ -91,24 +102,23 @@ def get_id():
     """
     return { "uuid": os.environ.get("UUID", "unknown UUID") }
 
+# === liveness check ===
 
-# === readiness check ===
-
-@app.get("/readiness", status_code=200)
-def readiness(resp: Response):
+@app.get("/liveness", status_code=200)
+def liveness(resp: Response):
     """
-    Checks readiness of the server to send data.
+    Checks liveness of the server to send data.
 
     Status code:
     - `200`: OK, server is working correct
     - `409_CONFLICT`: server should be restarted
     """
     if app_state["request_author"]:
-        return f"Access Denied (status code: {status.HTTP_200_OK})"
+        return f"livenessProbe (status code: {status.HTTP_200_OK})"
     else:
         resp.status_code = status.HTTP_409_CONFLICT
-        return f"Access Denied (status code: {status.HTTP_409_CONFLICT})"
-        # raise HTTPException(status.HTTP_503_SERVICE_UNAVAILABLE)
+        return f"livenessProbe (status code: {status.HTTP_409_CONFLICT})"
+
 
 
 # TO TEST APP LOCALLY (.env file is required):
