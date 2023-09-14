@@ -11,6 +11,5 @@ CMD ["actix_app"]
 # ---------------------------------------------------------------
 # Image on Docker Hub: https://hub.docker.com/r/glebcom/actix-app
 # Image size:
-#   - 1.0.0-distroless: 36.34 MB 🤷‍♂️
-#                      (1 MB more than base image! 😅)
+#   - 1.0.0-distroless: 13.39 MB 🚀
 # ---------------------------------------------------------------
