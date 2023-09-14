@@ -33,8 +33,8 @@ Download `py-app` image:
 
 ```bash
 # build image from Dockerfile
-$ docker build -t glebcom/py-app:1.0.0-alpine .
-$ docker build -t glebcom/py-app:1.0.0-slim .
+$ docker build -f Dockerfile.alpine -t glebcom/py-app:1.0.0-alpine .
+$ docker build -f Dockerfile.debian-slim -t glebcom/py-app:1.0.0-slim .
 
 # or use docker pull
 docker pull glebcom/py-app:1.0.0-alpine

@@ -45,7 +45,7 @@ REQUEST_TOKEN = "15708702692062422508"
 
 
 @app.get("/", status_code=200)
-def index(req: Request, resp: Response):
+async def index(req: Request, resp: Response):
     """
     Root endpoint of the server.
 
@@ -74,7 +74,7 @@ def index(req: Request, resp: Response):
 
 
 @app.get("/hostname")
-def get_hostname():
+async def get_hostname():
     """
     Returns hostname
     """
@@ -82,7 +82,7 @@ def get_hostname():
 
 
 @app.get("/author")
-def get_author():
+async def get_author():
     """
     Returns author name
     """
@@ -94,7 +94,7 @@ def get_author():
 
 
 @app.get("/id")
-def get_id():
+async def get_id():
     """
     Returns value from UUID env variable.
     
@@ -105,7 +105,7 @@ def get_id():
 # === liveness check ===
 
 @app.get("/liveness", status_code=200)
-def liveness(resp: Response):
+async def liveness(resp: Response):
     """
     Checks liveness of the server to send data.
 

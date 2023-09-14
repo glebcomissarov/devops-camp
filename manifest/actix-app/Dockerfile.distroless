@@ -1,0 +1,16 @@
+FROM glebcom/actix-app:1.0.0-bullseye-slim AS build
+
+FROM gcr.io/distroless/cc-debian11
+
+ARG ARCH=aarch64
+
+COPY --from=build /usr/local/bin/actix_app /usr/local/bin/actix_app
+
+CMD ["actix_app"]
+
+# ---------------------------------------------------------------
+# Image on Docker Hub: https://hub.docker.com/r/glebcom/actix-app
+# Image size:
+#   - 1.0.0-distroless: 36.34 MB 🤷‍♂️
+#                      (1 MB more than base image! 😅)
+# ---------------------------------------------------------------

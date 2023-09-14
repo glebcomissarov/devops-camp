@@ -47,6 +47,9 @@ Usefull commands to build Docker image:
 ```bash
 $ docker build -t glebcom/actix-app:1.0.0-bullseye-slim .
 
+# distroless image has the same size :(
+$ docker build -f Dockerfile.distroless -t glebcom/actix-app:1.0.0-distroless .
+
 $ docker run -it --rm --name actix -p 8080:8080 -d -e FASTAPI_SERVICE_HOSTNAME="http://localhost:8000" glebcom/actix-app:1.0.0-bullseye-slim
 
 $ docker exec -it actix sh
