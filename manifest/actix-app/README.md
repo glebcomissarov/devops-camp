@@ -5,6 +5,11 @@ This is small web application written in Rust using [Actix](https://actix.rs) we
 - `/` - root endpoint just prints information that app is working
 - `/check_fastapi_app` - sends http requests to server with hostname specified at `FASTAPI_SERVICE_HOSTNAME` variable and prints result.
 
+There are two images:
+
+- `glebcom/actix-app:1.0.0-distroless` (13.39 MB 🚀)
+- `glebcom/actix-app:1.0.0-bullseye-slim` (35.04 MB)
+
 Run with `docker-compose`:
 
 ```bash
