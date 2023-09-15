@@ -8,8 +8,8 @@ $ make write
 
 # run config files
 $ kubectl apply -f setup.yml # setup Namespace and ComfigMap
-$ kubectl apply -f deploy-actix.yml
-$ kubectl apply -f deploy-fastapi.yml
+$ kubectl apply -f build-actix.yml
+$ kubectl apply -f build-fastapi.yml
 
 # live watch how ReplicaSet will manage Pods
 $ kubectl get pods -n cloudns --watch
@@ -84,7 +84,7 @@ fastapi        3/5     5            3           4m1s
 
 ```bash
 # get pods
-$ kubectl get pods -n cloudns
+$ kubectl get pods -n cloudns --show-labels
 ```
 
 ```bash

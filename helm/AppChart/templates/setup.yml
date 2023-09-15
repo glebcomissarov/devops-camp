@@ -16,8 +16,8 @@ metadata:
   name: config-map
   namespace: cloudns
 data:
-  author: {{.Values.vars.author}}
-  fastapi_service_hostname: http://fastapi-app
+  author: {{.Values.fastapiApp.vars.author}}
+  fastapi_service_hostname: "http://{{ .Values.fastapiApp.serviceName }}"
 # ------
 # Usage:
 # ------

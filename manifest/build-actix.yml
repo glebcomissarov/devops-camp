@@ -25,7 +25,6 @@ spec:
       labels:
         app: actix-rust-web
     spec:
-      # hostNetwork: true
       containers:
         - name: actix-app
           image: glebcom/actix-app:1.0.0-bullseye-slim

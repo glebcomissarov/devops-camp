@@ -1,8 +1,19 @@
-deploy:
-  name: fastapi
-  replicas: 5
-image:
-  name: glebcom/py-app
-  tag: 1.0.0-alpine
-vars:
-  author: Gleb Komissarov (from cm via helm)
+fastapiApp:
+  # docker image name and tag
+  image:
+    name: glebcom/py-app
+    tag: 1.0.0-alpine
+  # varaibles for k8s Deployment
+  deploy:
+    name: fastapi-deploy
+    replicas: 5
+  # ClusterIP name
+  serviceName: fastapi-app
+  # some environment varaibles used in FastAPI app
+  vars:
+    author: Gleb Komissarov (from cm via helm)
+actixApp:
+  # docker image name and tag
+  image:
+    name: glebcom/actix-app
+    tag: 1.0.0-bullseye-slim

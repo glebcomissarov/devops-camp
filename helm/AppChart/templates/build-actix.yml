@@ -4,9 +4,7 @@
 #
 # 1) Deployment will manage ReplicaSet
 #    with 2 replicas (Pods with Rust Actix app)
-# 2) Deployment will have ClusterIP service
-#    that will be used by FastAPI Deployment for Readiness probe
-# 3) Deployment will have Ingress service
+# 2) Deployment will have Ingress service
 #    to have access outside of Cluster
 # -------------------------------------------------------
 
@@ -27,10 +25,9 @@ spec:
       labels:
         app: actix-rust-web
     spec:
-      # hostNetwork: true
       containers:
         - name: actix-app
-          image: glebcom/actix-app:1.0.0-bullseye-slim
+          image: "{{.Values.actixApp.image.name}}:{{.Values.actixApp.image.tag}}"
           resources:
             limits:
               memory: "128Mi"
@@ -69,63 +66,62 @@ spec:
 ---
 # create ClusterIP internal Service
 
-# apiVersion: v1
-# kind: Service
-# metadata:
-#   name: actix-internal-service
-#   namespace: cloudns
-# spec:
-#   selector:
-#     app: external
-#   ports:
-#     - protocol: TCP
-#       port: 80
-#       targetPort: actix-local
----
-# create LoadBalancer Service
-
 apiVersion: v1
 kind: Service
 metadata:
-  name: actix-app-service
+  name: actix-internal-service
   namespace: cloudns
 spec:
-  type: LoadBalancer
   selector:
     app: actix-rust-web
   ports:
     - protocol: TCP
-      port: 8090 # localhost:8090
+      port: 80
       targetPort: actix-local
+---
+# create LoadBalancer Service
+
+# apiVersion: v1
+# kind: Service
+# metadata:
+#   name: actix-app-service
+#   namespace: cloudns
+# spec:
+#   type: LoadBalancer
+#   selector:
+#     app: actix-rust-web
+#   ports:
+#     - protocol: TCP
+#       port: 8090 # localhost:8090
+#       targetPort: actix-local
 
 ---
 # Add Ingress
 
-# apiVersion: networking.k8s.io/v1
-# kind: Ingress
-# metadata:
-#   name: actix-ingress
-#   namespace: cloudns
-# spec:
-#   ingressClassName: nginx
-#   rules:
-#     - host: "actix-app.cloud.ru"
-#       http:
-#         paths:
-#           - path: /
-#             pathType: Prefix
-#             backend:
-#               service:
-#                 name: actix-internal-service
-#                 port:
-#                   number: 80
-
-# - host: actix-app.cloud.ru
-#   http:
-#     paths:
-#       - path: /
-#         backend:
-#           service:
-#             name: actix-internal-service
-#             port:
-#               number: 80
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: actix-ingress
+  namespace: cloudns
+  annotations:
+    nginx.ingress.kubernetes.io/use-regex: "true"
+spec:
+  ingressClassName: nginx
+  rules:
+    - host: "actix-app.cloud.ru"
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: actix-internal-service
+                port:
+                  number: 80
+          - path: /check_fastapi_app.*
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: actix-internal-service
+                port:
+                  number: 80

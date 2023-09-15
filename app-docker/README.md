@@ -43,7 +43,9 @@ docker pull glebcom/py-app:1.0.0-alpine
 Run container:
 
 ```bash
-$ docker run -it --name py-app -e AUTHOR=Docker -e UUID="Not Found" -p 8000:8000 -d --rm glebcom/py-app:1.0.0-alpine
+$ docker run -it --name py-app \
+    -e AUTHOR=Docker -e UUID="Not Found" \
+    -p 8000:8000 -d --rm glebcom/py-app:1.0.0-alpine
 ```
 
 Or run with `docker-compose`:

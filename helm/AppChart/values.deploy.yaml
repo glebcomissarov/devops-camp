@@ -1,2 +1,4 @@
-vars:
-  author: Gleb Komissarov (from cm via helm deploy)
+fastapiApp:
+  # environment varaibles used in FastAPI
+  vars:
+    author: Gleb Komissarov (from cm via helm deploy)

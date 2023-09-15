@@ -12,7 +12,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{.Values.deploy.name}}
+  name: fastapi
   namespace: cloudns
   annotations:
     company: cloud-ru
@@ -21,16 +21,28 @@ metadata:
 spec:
   selector:
     matchLabels:
-      app: fastapi-app
-  replicas: {{.Values.deploy.replicas}}
+      app: fastapi
+    matchExpressions:
+      - key: env
+        operator: In
+        values:
+          - production
+          - dev
+  replicas: 5
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 2 # how many pods we can add at a time
+      maxUnavailable: 2
   template:
     metadata:
       labels:
-        app: fastapi-app
+        app: fastapi
+        env: production
     spec:
       containers:
         - name: py-app
-          image: "{{.Values.image.name}}:{{.Values.image.tag}}"
+          image: glebcom/py-app:1.0.0-alpine
           resources:
             limits:
               memory: "128Mi"
@@ -84,8 +96,10 @@ metadata:
 spec:
   type: ClusterIP
   selector:
-    app: fastapi-app
+    app: fastapi
   ports:
     - port: 80
       targetPort: local
       protocol: TCP
+# dns: http://<service-name>.<namespace>.svc.cluster.local
+# dns: http://fastapi-app.cloudns.svc.cluster.local
